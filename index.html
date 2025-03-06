@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Recommendation System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("https://img.freepik.com/premium-photo/abstract-music-background-with-notes-d-image-design_476363-1605.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            text-align: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-family: Montserrat;
+            font-size: 48px;
+            font-weight: 500;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 500px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .container:hover {
+            transform: scale(1.05);
+        }
+
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .dropdown-wrapper {
+            position: relative;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .dropdown {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            color: #191414;
+            background-color: #fff;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown:focus {
+            outline: none;
+            border: 2px solid #1DB954;
+            box-shadow: 0 0 5px rgba(29, 185, 84, 0.5);
+        }
+
+        .dropdown option {
+            padding: 12px;
+        }
+
+        .search-button {
+            padding: 14px 30px;
+            background-color: #1DB954;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-button:hover {
+            background-color: #1ed760;
+        }
+
+        .search-button:active {
+            background-color: #1a9b47;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            font-size: 14px;
+            color: #b3b3b3;
+        }
+
+        .footer a {
+            color: #1DB954;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+
+        @media screen and (max-width: 500px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            .container {
+                padding: 30px;
+                width: 90%;
+            }
+
+            .search-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Music Recommendation System</h1>
+        <div class="search-container">
+            <!-- Type of Recommendation -->
+            <div class="dropdown-wrapper">
+                <select id="recommendationType" class="dropdown" onchange="updateForm()" required>
+                    <option value="" disabled selected>Select Recommendation Type</option>
+                    <option value="hero">Hero-Based</option>
+                    <option value="song">Song-Based</option>
+                    <option value="year_range">Year Range-Based</option>
+                </select>
+            </div>
+
+            <!-- Dynamic Form Placeholder -->
+            <div id="dynamicForm"></div>
+        </div>
+    </div>
+
+    <script>
+        function updateForm() {
+            const recommendationType = document.getElementById("recommendationType").value;
+            const dynamicForm = document.getElementById("dynamicForm");
+
+            dynamicForm.innerHTML = ""; // Clear previous content
+
+            if (recommendationType === "hero") {
+                dynamicForm.innerHTML = `
+                    <form action="/recommend_hero" method="POST">
+                        <div class="dropdown-wrapper">
+                            <select name="hero" class="dropdown" required>
+                                <option value="" disabled selected>Select a Hero</option>
+                                {% for hero in heroes %}
+                                <option value="{{ hero }}">{{ hero }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="search-button">Recommend for Hero</button>
+                    </form>
+                `;
+            } else if (recommendationType === "song") {
+                dynamicForm.innerHTML = `
+                    <form action="/recommend" method="POST">
+                        <div class="dropdown-wrapper">
+                            <select name="song" class="dropdown" required>
+                                <option value="" disabled selected>Select a Song</option>
+                                {% for song in songs %}
+                                <option value="{{ song }}">{{ song }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="search-button">Recommend for Song</button>
+                    </form>
+                `;
+            } else if (recommendationType === "year_range") {
+                dynamicForm.innerHTML = `
+                    <form action="/recommend_year_range" method="POST">
+                        <div class="dropdown-wrapper">
+                            <select name="year_range" class="dropdown" required>
+                                <option value="" disabled selected>Select a Year Range</option>
+                                <option value="1900-1950">1900-1950</option>
+                                <option value="1951-1970">1951-1970</option>
+                                <option value="1971-1990">1971-1990</option>
+                                <option value="1991-2000">1991-2000</option>
+                                <option value="2001-2010">2001-2010</option>
+                                <option value="2011-2020">2011-2020</option>
+                                <option value="2021-2025">2021-2025</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="search-button">Recommend for Year Range</button>
+                    </form>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
